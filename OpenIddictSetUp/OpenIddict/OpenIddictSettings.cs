@@ -20,6 +20,26 @@
         /// </summary>
         public bool IsDeviceCodeFlowAllowed { get; set; }
 
+        /// <summary>
+        /// Disables logout endpoint (/connect/logout is enabled by default)
+        /// </summary>
+        public bool IsLogoutEndpointDisabled { get; set; }
+
+        /// <summary>
+        /// Disables authorization code flow (/connect/authorize is enabled by default)
+        /// </summary>
+        public bool IsAuthorizeFlowDisabled { get; set; }
+
+        /// <summary>
+        /// Disables refresh token flow (via /connect/token, enabled by default)
+        /// </summary>
+        public bool IsRefreshTokenFlowDisabled { get; set; }
+
+        /// <summary>
+        /// Determines whether to call options.RegisterScopes with available client scopes (enabled by default) or not
+        /// </summary>
+        public bool IsScopeRegistrationDisabled { get; set; }
+
         public OpenIddictServerBuilder OpenIddictServerBuilder { get; set; }
         public IConfiguration? Configuration { get; set; }
 

@@ -1,9 +1,10 @@
 ﻿using AspNet.Security.OpenIdConnect.Primitives;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using OpenIddictSetUp.Configs;
 using OpenIddictSetUp.Context;
 using OpenIddictSetUp.Entities;
 using OpenIddictSetUp.OpenIddict;
+using System.Security.Cryptography.X509Certificates;
 
 namespace OpenIddictSetUp
 {
@@ -15,6 +16,9 @@ namespace OpenIddictSetUp
         }
         public static void ConfigureAuth(this WebApplicationBuilder builder)
         {
+            var authSettings = new AuthSettings();
+            builder.Configuration.Bind(nameof(AuthSettings), authSettings);
+
             builder.Services.Configure<IdentityOptions>(options =>
             {
                 options.ClaimsIdentity.UserNameClaimType = OpenIdConnectConstants.Claims.Name;
@@ -23,7 +27,8 @@ namespace OpenIddictSetUp
                 options.ClaimsIdentity.EmailClaimType = OpenIdConnectConstants.Claims.Email;
             });
 
-            //tokenExpiry
+            var tokenExpiry = TimeSpan.FromMinutes(authSettings.TokenExpiry);
+
             var publicUrl = builder.Configuration.GetSection("Auth").GetValue<string>("PublicHost");
 
             builder.Services.AddOpenIddict()
@@ -46,10 +51,29 @@ namespace OpenIddictSetUp
 
                     if(builder.Environment.IsDevelopment())
                     {
-                        options.
+                        options.UseAspNetCore().DisableTransportSecurityRequirement();
+                        options.AddDevelopmentEncryptionCertificate()
+                             .AddDevelopmentSigningCertificate();
                     }
-                });
+                    else
+                    {
+                        var certPwd = builder.Configuration.GetSection("OpenId:FileCertificate").GetValue<string>("Password");
+                        byte[] rawData = await OpenIddictSetupExtensions.GetCertificate(builder);
 
+                        options.AddSigningCertificate(new MemoryStream(rawData), certPwd, X509KeyStorageFlags.MachineKeySet |
+                       X509KeyStorageFlags.Exportable);
+                    }
+                })
+
+                // Register the OpenIddict validation components.
+                .AddValidation(options =>
+                {
+                    // Import the configuration from the local OpenIddict server instance.
+                    options.UseLocalServer();
+
+                    // Register the ASP.NET Core host.
+                    options.UseAspNetCore();
+                });
 
         }
     }

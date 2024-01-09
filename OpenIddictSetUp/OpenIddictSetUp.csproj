@@ -14,11 +14,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.14" />
+    <PackageReference Include="OpenIddict.AspNetCore" Version="5.0.1" />
     <PackageReference Include="OpenIddict.EntityFrameworkCore" Version="5.0.1" />
     <PackageReference Include="OpenIddict.EntityFrameworkCore.Models" Version="5.0.1" />
-    <PackageReference Include="OpenIddict.Server" Version="5.0.1" />
-    <PackageReference Include="OpenIddict.Server.AspNetCore" Version="5.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
   </ItemGroup>
 
 </Project>

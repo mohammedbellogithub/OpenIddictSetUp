@@ -1,10 +1,14 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Auth;
+using Microsoft.WindowsAzure.Storage.Blob;
+using OpenIddictSetUp.Configs;
 using System.Security.Cryptography.X509Certificates;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace OpenIddictSetUp.OpenIddict
 {
-    public static class OpenIddictExtensions
+    public static class OpenIddictSetupExtensions
     {
         /// <summary>
         /// Configures openiddict with signing certificate
@@ -32,18 +36,7 @@ namespace OpenIddictSetUp.OpenIddict
             return options;
         }
 
-        ///// <summary>
-        ///// Configures openiddict with encryption certificate from appsettings.json
-        ///// </summary>
-        //public static OpenIddictServerBuilder AddEncryptionCertificateFromConfiguration(
-        //    this OpenIddictServerBuilder options,
-        //    IConfiguration configuration
-        //)
-        //{
-        //    OpenIdCertificateInfo encryptionCertificate = configuration.Get<OpenIdCertificateInfo>();
-        //    return options.AddEncryptionCertificate(encryptionCertificate);
-        //}
-
+       
         /// <summary>
         /// Configures openiddict with encryption certificate
         /// </summary>
@@ -178,6 +171,28 @@ namespace OpenIddictSetUp.OpenIddict
                 });
         }
 
+        public static async Task<byte[]> GetCertificate(WebApplicationBuilder builder)
+        {
+            var certificate = new byte[] { };
+            var certificateSettings = new CertificateSettings();
+            builder.Configuration.Bind(nameof(CertificateSettings), certificateSettings);
+            builder.Services.AddSingleton(certificateSettings);
+            var storageAccount = CloudStorageAccount.Parse(certificateSettings.connectionString);
+            var storageCredentials = new StorageCredentials(storageAccount.Credentials.AccountName, certificateSettings.accesskey);
 
+            var cloudBlobContainer = new CloudBlobContainer(new Uri(certificateSettings.blobUrl), storageCredentials);
+            var cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(certificateSettings.blobName);
+
+            // Download the certificate
+            using (var ms = new MemoryStream())
+            {
+                await cloudBlockBlob.DownloadToStreamAsync(ms);
+                ms.Seek(0, SeekOrigin.Begin);
+
+                certificate = ms.ToArray();
+            }
+
+            return certificate;
+        }
     }
 }
