@@ -1,5 +1,6 @@
 ﻿using AspNet.Security.OpenIdConnect.Primitives;
 using Microsoft.AspNetCore.Identity;
+using OpenIddict.Validation.AspNetCore;
 using OpenIddictSetUp.Configs;
 using OpenIddictSetUp.Context;
 using OpenIddictSetUp.Entities;
@@ -74,6 +75,18 @@ namespace OpenIddictSetUp
                     // Register the ASP.NET Core host.
                     options.UseAspNetCore();
                 });
+
+            // if you want to secure some controllers/actions within the same project with JWT
+            // you need to configure something like the following
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme =
+                    OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme =
+                    OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+            });
+
+            builder.Services.AddAuthorization();
 
         }
     }
