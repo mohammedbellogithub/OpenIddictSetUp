@@ -74,7 +74,7 @@ namespace OpenIddictSetUp.OpenIddict
 
 
         /// <summary>
-        /// Configures OpenIddict to use Token and Iposweb.Coreorization endpoints
+        /// Configures OpenIddict to use Token and app.Coreorization endpoints
         /// </summary>
         public static OpenIddictBuilder AddDefaultAuthorizationController(
             this OpenIddictBuilder openIddictBuilder,
