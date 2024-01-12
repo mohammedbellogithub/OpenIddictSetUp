@@ -42,7 +42,6 @@ namespace OpenIddictSetUp.Controllers
 
         private readonly IMemoryCacheService _cacheService;
 
-        protected virtual string ControllerName => GetType().Name.Replace("Controller", "");
 
         /// <summary>
         ///  Customized error that is returned in case of authentication error

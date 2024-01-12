@@ -19,7 +19,7 @@ namespace OpenIddictSetUp
         {
             var authSettings = new AuthSettings();
             builder.Configuration.Bind(nameof(AuthSettings), authSettings);
-
+            builder.Services.AddSingleton(authSettings);
             builder.Services.Configure<IdentityOptions>(options =>
             {
                 options.ClaimsIdentity.UserNameClaimType = OpenIdConnectConstants.Claims.Name;

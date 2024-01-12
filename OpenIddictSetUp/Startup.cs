@@ -1,9 +1,11 @@
 ﻿using EasyCaching.Core;
 using EasyCaching.Serialization.SystemTextJson.Configurations;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using OpenIddictSetUp.Context;
 using OpenIddictSetUp.Contract.Abstraction;
 using OpenIddictSetUp.Contract.Implementation;
+using OpenIddictSetUp.Entities;
 
 namespace OpenIddictSetUp
 {
@@ -29,6 +31,20 @@ namespace OpenIddictSetUp
                 return new MemoryCacheService(provider.GetRequiredService<IEasyCachingProvider>(),
                     TimeSpan.FromDays(1));
             });
+
+
+            builder.Services.AddIdentity<AppUser, AppRoles>(options =>
+            {
+                options.Password.RequireNonAlphanumeric = false;
+                options.User.RequireUniqueEmail = true;
+                options.Lockout.AllowedForNewUsers = false;
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredLength = 6;
+
+            }).AddEntityFrameworkStores<AppDbContext>()
+              .AddDefaultTokenProviders();
         }
     }
 }

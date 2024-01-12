@@ -29,7 +29,7 @@ namespace OpenIddictSetUp.OpenIddict
 
                 var clientObject = await manager.FindByClientIdAsync(client.ClientId!).ConfigureAwait(false);
 
-                if(clientObject != null)
+                if(clientObject is null)
                 {
                     await manager.CreateAsync(client).ConfigureAwait(false);
                 }
